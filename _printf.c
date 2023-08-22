@@ -3,71 +3,45 @@
 /**
  * _printf - prints a formatted string
  * @format: character string for desired output
- * Return: the number of characters printed (excluding the null byte used to end output to strings)
+ * Return: the number of characters printed
+ * (excluding the null byte used to end output to strings)
  */
-
 int _printf(const char *format, ...)
 {
-    int count = 0; // To keep track of the number of characters printed
-    va_list args;
-    va_start(args, format);
+	int c = 0;
+	size_t i = 0;
 
-    while (*format != '\0')
-    {
-        if (*format == '%')
-        {
-            format++; // Move past the '%'
+	va_list a;
 
-            // Handle conversion specifiers
-            switch (*format)
-            {
-            case 'c':
-                // Print a character
-                _putchar(va_arg(args, int));
-                count++;
-                break;
-            case 's':
-                // Print a string
-                {
-                    char *str = va_arg(args, char *);
-                    while (*str != '\0')
-                    {
-                        _putchar(*str);
-                        str++;
-                        count++;
-                    }
-                }
-                break;
-            case '%':
-                // Print a literal '%' character
-                _putchar('%');
-                count++;
-                break;
-            default:
-                // Unsupported specifier, just print as is
-                _putchar('%');
-                _putchar(*format);
-                count += 2;
-                break;
-            }
-        }
-        else
-        {
-            // Normal character, print as is
-            _putchar(*format);
-            count++;
-        }
+	va_start(a, format);
 
-        format++; // Move to the next character in the format string
-    }
-
-    va_end(args);
-
-    return count;
+	for (i = 0; format[i]; i++)
+	{
+		if (format[i] == '%' && format[i + 1])
+		{
+			i++;
+			switch (format[i])
+			{
+				case 'c':
+					c += _putchar(va_arg(a, int));
+					break;
+				case 's': {
+					const char *s = va_arg(a, const char *);
+					while (*s)
+						c += _putchar(*s++);
+					break;
+				}
+				case '%':
+					c += _putchar('%');
+					break;
+				default:
+					c += _putchar('%'), c += _putchar(format[i]);
+					break;
+			}
+		}
+		else
+			c += _putchar(format[i]);
+	}
+	va_end(a);
+	return (c);
 }
-/*
-int main()
-{
-    _printf("Hello, %s! The answer is %d%%.\n", "world", 42);
-    return 0;
-}*/
